@@ -34,7 +34,7 @@ final class User: Model, Content, @unchecked Sendable {
     
     init() { }
     
-    init(id: UUID? = nil, name: String, email: String, password: String, maxBalance: Int, currentBalance: Int, wins: Int, blackjacks: Int, avatar: String) {
+    init(id: UUID? = nil, name: String, email: String, password: String, maxBalance: Int = 0, currentBalance: Int = 100, wins: Int = 0, blackjacks: Int = 0, avatar: String) {
         self.id = id
         self.name = name
         self.email = email

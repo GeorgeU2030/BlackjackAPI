@@ -16,7 +16,7 @@ public func configure(_ app: Application) async throws {
     await app.jwt.keys.add(hmac: HMACKey(stringLiteral: secret), digestAlgorithm: .sha256)
     
     // add migrations
-
+    app.migrations.add(CreateUser())
     // run migrations
     try await app.autoMigrate()
     
