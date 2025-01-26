@@ -6,8 +6,11 @@ struct AuthController: RouteCollection {
 
     // functions to define routes
     func boot(routes: RoutesBuilder) throws {
-        let authRoutes = routes.grouped("auth")
-        authRoutes.post("register", use: register)
+       
+        let groupedRoutes = routes.grouped("auth")
+        
+        groupedRoutes.post("register", use: register)
+        groupedRoutes.post("login", use: login)
     }
 
     // function for register a user
@@ -34,4 +37,38 @@ struct AuthController: RouteCollection {
         // Return the user
         return user
     } 
+    
+    // function for login a user
+    @Sendable
+    func login(req: Request) async throws -> [String: String] {
+            // Decode the user credentials from the JSON request body
+            let loginData = try req.content.decode(User.Login.self)
+            
+            try User.Login.validate(content: req)
+    
+            // Search for the user by email
+            guard let user = try await User.query(on: req.db)
+                .filter(\.$email == loginData.email)
+                .first() else {
+                throw Abort(.unauthorized, reason: "User not found")
+            }
+    
+            // Verify the password
+            guard try user.verify(password: loginData.password) else {
+                throw Abort(.unauthorized, reason: "Invalid credentials")
+            }
+    
+            // Create the payload for the JWT
+            let payload = Payload(
+                subject: SubjectClaim(value: user.email),
+                expiration: .init(value: .distantFuture) // Define the expiration as needed
+            )
+    
+            // Sign the JWT
+            let token = try await req.jwt.sign(payload)
+    
+            // Return the token in the response
+            return ["token": token]
+    }
+    
 }
