@@ -40,7 +40,7 @@ struct AuthController: RouteCollection {
     
     // function for login a user
     @Sendable
-    func login(req: Request) async throws -> [String: String] {
+    func login(req: Request) async throws -> LoginResponse {
             // Decode the user credentials from the JSON request body
             let loginData = try req.content.decode(User.Login.self)
             
@@ -67,8 +67,18 @@ struct AuthController: RouteCollection {
             // Sign the JWT
             let token = try await req.jwt.sign(payload)
     
+            let userResponse = UserResponse(
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                maxBalance: user.maxBalance,
+                currentBalance: user.currentBalance,
+                wins: user.wins,
+                blackjacks: user.blackjacks,
+                avatar: user.avatar
+            )
             // Return the token in the response
-            return ["token": token]
+            return LoginResponse(user: userResponse, token: token)
     }
     
 }
