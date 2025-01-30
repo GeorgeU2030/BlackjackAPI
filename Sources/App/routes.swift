@@ -12,4 +12,7 @@ func routes(_ app: Application) throws {
     // routes auth
     let authController = AuthController()
     try app.register(collection: authController)
+    
+    let userController = UserController()
+    try app.register(collection: userController)
 }
