@@ -5,6 +5,12 @@ struct LoginResponse: Content {
     var token: String
 }
 
+struct UpdateBalanceRequest: Content {
+    var currentBalance: Int
+    var wins: Int
+    var blackjacks: Int
+}
+
 struct UserResponse: Content {
     var id: UUID?
     var name: String
